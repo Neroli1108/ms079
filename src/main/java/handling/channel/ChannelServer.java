@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ChannelServer implements Serializable {
@@ -58,10 +59,10 @@ public class ChannelServer implements Serializable {
     private final MapleMapFactory mapFactory;
     private final MapleCodecFactory codecFactory;
     private EventScriptManager eventSM;
-    private static final Map<Integer, ChannelServer> INSTANCE_CACHED = new HashMap<>();
+    private static final Map<Integer, ChannelServer> INSTANCE_CACHED = new ConcurrentHashMap<>();
     private final Map<MapleSquadType, MapleSquad> mapleSquads = new ConcurrentEnumMap<MapleSquadType, MapleSquad>(MapleSquadType.class);
-    private final Map<Integer, HiredMerchant> merchants = new HashMap<Integer, HiredMerchant>();
-    private final Map<Integer, PlayerNPC> playerNPCs = new HashMap<Integer, PlayerNPC>();
+    private final Map<Integer, HiredMerchant> merchants = new ConcurrentHashMap<Integer, HiredMerchant>();
+    private final Map<Integer, PlayerNPC> playerNPCs = new ConcurrentHashMap<Integer, PlayerNPC>();
     private final ReentrantReadWriteLock merchLock = new ReentrantReadWriteLock(); //merchant
     private final ReentrantReadWriteLock squadLock = new ReentrantReadWriteLock(); //squad
     private int eventmap = -1;

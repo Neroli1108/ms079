@@ -1468,6 +1468,7 @@ public class MapleClient implements Serializable {
                 rs.close();
             }
         } catch (SQLException e) {
+            LOGGER.error("Error loading account data", e);
         } finally {
             try {
                 if (ps != null && !ps.isClosed()) {
@@ -1477,6 +1478,7 @@ public class MapleClient implements Serializable {
                     rs.close();
                 }
             } catch (SQLException e) {
+                LOGGER.error("Error closing resources", e);
             }
         }
     }

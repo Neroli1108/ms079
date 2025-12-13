@@ -70,14 +70,12 @@ public class CharLoginHandler {
                     c.getSession().write(LoginPacket.getLoginFailed(1)); //Shows no message, used for unstuck the login button
                     return;
                 }
-                AutoRegister.createAccount(login, pwd, c.getSession().getRemoteAddress().toString(), macData);
-                if (AutoRegister.success && AutoRegister.mac) {
+                AutoRegister.RegisterResult result = AutoRegister.createAccount(login, pwd, c.getSession().getRemoteAddress().toString(), macData);
+                if (result == AutoRegister.RegisterResult.SUCCESS) {
                     c.getSession().write(MaplePacketCreator.serverNotice(1, "账号创建成功,请尝试重新登录！"));
-                } else if (!AutoRegister.mac) {
+                } else if (result == AutoRegister.RegisterResult.MAC_LIMIT_EXCEEDED) {
                     c.getSession().write(MaplePacketCreator.serverNotice(1, "账号创建失败，机器码已经注册过账号！"));
                 }
-                AutoRegister.success = true;
-                AutoRegister.mac = true;
                 c.getSession().write(LoginPacket.getLoginFailed(1)); //Shows no message, used for unstuck the login button
                 return;
             }

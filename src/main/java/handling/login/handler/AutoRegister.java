@@ -17,7 +17,15 @@ public class AutoRegister {
 
     private static final int ACCOUNTS_PER_MAC = 1;
     public static boolean autoRegister = ServerConstants.getAutoReg();
-    public static boolean success = false, mac = true;
+
+    /**
+     * Registration result enum to avoid thread-unsafe static state
+     */
+    public enum RegisterResult {
+        SUCCESS,
+        MAC_LIMIT_EXCEEDED,
+        FAILED
+    }
 
     public static boolean getAccountExists(String login) {
         boolean accountExists = false;
@@ -37,14 +45,14 @@ public class AutoRegister {
         return accountExists;
     }
 
-    public static void createAccount(String login, String pwd, String eip, String macs) {
+    public static RegisterResult createAccount(String login, String pwd, String eip, String macs) {
         Connection con;
 
         try {
             con = DatabaseConnection.getConnection();
         } catch (Exception ex) {
             LOGGER.debug("创建账号异常", ex);
-            return;
+            return RegisterResult.FAILED;
         }
 
         try {
@@ -61,16 +69,18 @@ public class AutoRegister {
                 ps.setString(5, macs);
                 ps.setString(6, "/" + eip.substring(1, eip.lastIndexOf(':')));
                 ps.executeUpdate();
-                success = true;
+                ps.close();
+                rs.close();
+                return RegisterResult.SUCCESS;
             }
-            //  
-            //  ipc.close();
             if (rs.getRow() >= ACCOUNTS_PER_MAC) {
-                mac = false;
+                rs.close();
+                return RegisterResult.MAC_LIMIT_EXCEEDED;
             }
             rs.close();
         } catch (SQLException ex) {
             LOGGER.error("SQL 问题", ex);
         }
+        return RegisterResult.FAILED;
     }
 }

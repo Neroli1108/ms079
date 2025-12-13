@@ -642,7 +642,7 @@ public class MapleClient implements Serializable {
     private void unban() {
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("UPDATE accounts SET banned = 0 and banreason = '' WHERE id = ?");
+            PreparedStatement ps = con.prepareStatement("UPDATE accounts SET banned = 0, banreason = '' WHERE id = ?");
             ps.setInt(1, accId);
             ps.executeUpdate();
             ps.close();

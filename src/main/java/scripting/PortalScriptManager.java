@@ -68,6 +68,13 @@ public class PortalScriptManager {
         InputStream fr = null;
         final ScriptEngine portal = sef.getScriptEngine();
         try {
+            // Load Nashorn compatibility for importPackage/importClass support
+            try {
+                portal.eval("load('nashorn:mozilla_compat.js');");
+            } catch (Exception ignore) {
+                // Compatibility script may not be available in all Java versions
+            }
+            
             fr = new FileInputStream(scriptFile);
             BufferedReader bf = new BufferedReader(new InputStreamReader(fr, EncodingDetect.getJavaEncode(scriptFile)));
             CompiledScript compiled = ((Compilable) portal).compile(bf);
